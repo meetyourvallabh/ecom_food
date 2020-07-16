@@ -1,0 +1,43 @@
+{% extends "admin_layout.html" %} {% block body %}
+<!-- Page Wrapper -->
+<div id="wrapper">
+  <!-- Sidebar -->
+  {% include "includes/_sidebar.html" %}
+  <!-- End Sidebar -->
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <!-- Main Content -->
+    <div id="content">
+      <!-- Topbar -->
+      {% include "includes/_topnavbar.html" %}
+      <!-- End of Topbar -->
+
+      <!-- Form Start -->
+      <div class="container" style="margin-left: 175px;">
+        <div class="col-8">
+          {% include "includes/_messages.html" %}
+          <h3>Update Category</h3>
+          <form method="POST" action="{{url_for('admin.create_category')}}">
+            <div class="form-group row mt-4 align-items-center">
+              <span class="col-3 mr-2">Enter the category</span>
+              <input
+                type="text"
+                class="form-control my-3 col-7"
+                name="name"
+                autofocus
+                required
+                value="{{found_category.name}}"
+              />
+              <button class="btn ml-2 mt-2 btn-outline-primary">
+                Update Category
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- Form End -->
+    </div>
+  </div>
+</div>
+{% endblock %}

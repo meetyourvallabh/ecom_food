@@ -16,13 +16,15 @@
       <!-- Form Start -->
       <div class="container" style="margin-left: 175px;">
         <div class="col-8">
+          {% include "includes/_messages.html" %}
           <h3>Add Category</h3>
-          <form>
+          <form method="POST" action="{{url_for('admin.create_category')}}">
             <div class="form-group row mt-4 align-items-center">
               <span class="col-3 mr-2">Enter the category</span>
               <input
                 type="text"
                 class="form-control my-3 col-7"
+                name="name"
                 autofocus
                 required
                 placeholder="For eg: Smoothies"

@@ -1,17 +1,20 @@
-from flask import Blueprint, render_template, jsonify, url_for, redirect, request
+from flask import Blueprint, render_template, jsonify, url_for, redirect, request, flash
 import datetime, string
 from database import mongo
 from random import *
+import os
+from PIL import Image
+from werkzeug.utils import secure_filename
 
 
-app = Blueprint('admin', __name__,template_folder='templates')
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
-
+app = Blueprint("admin", __name__, template_folder="templates")
 
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def dashboard():
+    return render_template("dashboard.html")
 
 
 @app.route("/charts")
@@ -24,14 +27,157 @@ def tables():
     return render_template("tables.html")
 
 
-@app.route("/products_create/")
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route("/products/create/", methods=["POST", "GET"])
 def create_product():
-    return render_template("add_product.html")
+    if request.method == "POST":
+        product_name = request.form["name"]
+        product_description = request.form["description"]
+        product_price = request.form["price"]
+        product_category = request.form["category"]
+        product_stock = request.form["stock"]
+        product_id = product_name[:2] + str(randint(111, 999))
+        product_photo = request.files["photo"]
+
+        if allowed_file(product_photo.filename):
+            path = url_for("static", filename="dashboard/img/products/" + product_id)
+            if not os.path.isdir(path):
+                print("dir exists")
+                os.makedirs(path)
+            file_name = secure_filename(product_photo.filename)
+            f = os.path.join(
+                url_for(
+                    "static", filename="dashboard/img/products/" + product_id + "/"
+                ),
+                file_name,
+            )
+            product_photo.save(f)
+
+        done = mongo.db.products.insert_one(
+            {
+                "product_id": product_id,
+                "photo": f,
+                "name": product_name,
+                "description": product_description,
+                "category": product_category,
+                "price": product_price,
+                "stock": product_stock,
+                "sold": 0,
+            }
+        )
+        if done:
+            flash('"' + product_name + '" created successfully!', "success")
+            return redirect(url_for("admin.products"))
+        else:
+            flash('"' + product_name + '" could not be created', "danger")
+    elif request.method == "GET":
+        all_categories = mongo.db.categories.find()
+    return render_template("add_product.html", all_categories=all_categories)
 
 
-@app.route("/categories/create")
+@app.route("/categories/create", methods=["POST", "GET"])
 def create_category():
+    if request.method == "POST":
+        category_name = request.form["name"]
+        category_id = category_name[:2] + str(randint(111, 999))
+
+        done = mongo.db.categories.insert_one(
+            {"category_id": category_id, "name": category_name,}
+        )
+
+        if done:
+            flash('"' + category_name + '" created successfully!', "success")
+            return redirect(url_for("admin.categories"))
+        else:
+            flash('"' + category_name + '" could not be created', "danger")
+            return redirect(url_for("admin.create_category"))
+
     return render_template("add_category.html")
+
+
+@app.route("/products")
+def products():
+    all_products = mongo.db.products.find()
+    return render_template("all_products.html", all_products=all_products)
+
+
+@app.route("/categories")
+def categories():
+    all_categories = mongo.db.categories.find()
+    return render_template("all_categories.html", all_categories=all_categories)
+
+
+@app.route("/products/update/<product_id>", methods=["GET", "POST"])
+def update_product(product_id):
+    if request.method == "POST":
+        new_name = request.form["name"]
+        new_description = request.form["description"]
+        new_price = request.form["price"]
+        new_category = request.form["category"]
+        new_stock = request.form["stock"]
+        done = mongo.db.categories.update_one(
+            {"product_id": product_id},
+            {
+                "$set": {
+                    "name": new_name,
+                    "description": new_description,
+                    "price": new_price,
+                    "category": new_category,
+                    "stock": new_stock,
+                }
+            },
+        )
+        if done:
+            flash("Product successfully updated!", "success")
+            return redirect(url_for("admin.products"))
+        else:
+            flash("Couldn't update product", "danger")
+            return redirect(url_for("admin.update_product", product_id=product_id))
+    elif request.method == "GET":
+        found_product = mongo.db.products.find_one({"product_id": product_id})
+    return render_template("update_product.html", found_product=found_product)
+
+
+@app.route("/categories/update/<category_id>", methods=["GET", "POST"])
+def update_category(category_id):
+    if request.method == "POST":
+        new_name = request.form["name"]
+        done = mongo.db.categories.update_one(
+            {"category_id": category_id}, {"$set": {"name": new_name,}}
+        )
+        if done:
+            flash("Category successfully updated!", "success")
+            return redirect(url_for("admin.categories"))
+        else:
+            flash("Couldn't update category", "danger")
+            return redirect(url_for("admin.update_category", category_id=category_id))
+    found_category = mongo.db.categories.find_one({"category_id": category_id})
+    return render_template("update_category.html", found_category=found_category)
+
+
+@app.route("/products/delete/<product_id>", methods=["GET", "POST"])
+def delete_product(product_id):
+    done = mongo.db.products.delete_one({"product_id": product_id})
+    if done:
+        flash("Product successfully deleted!", "success")
+        return redirect(url_for("admin.products"))
+    else:
+        flash("Product couldn't be deleted!", "danger")
+        return redirect(url_for("admin.products"))
+
+
+@app.route("/categories/delete/<category_id>", methods=["GET", "POST"])
+def delete_category(category_id):
+    done = mongo.db.categories.delete_one({"category_id": category_id})
+    if done:
+        flash("Category successfully deleted!", "success")
+        return redirect(url_for("admin.categories"))
+    else:
+        flash("Category couldn't be deleted!", "danger")
+        return redirect(url_for("admin.categories"))
 
 
 if __name__ == "__main__":

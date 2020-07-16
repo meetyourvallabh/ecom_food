@@ -14,8 +14,13 @@
       <!-- End of Topbar -->
       <div class="container" style="margin-left: 175px;">
         <div class="col-8">
+          {% include "includes/_messages.html" %}
           <h3>Add Product</h3>
-          <form>
+          <form
+            method="POST"
+            action="{{url_for('admin.create_product')}}"
+            enctype="multipart/form-data"
+          >
             <div class="form-group row mt-5">
               <span class="col-2 mr-2 align-items-center">Photo</span>
               <input
@@ -28,31 +33,55 @@
             </div>
             <div class="form-group row">
               <span class="col-2 mr-2 align-items-center">Name</span>
-              <input name="photo" id="name" class="form-control col-8" />
+              <input
+                required
+                name="name"
+                id="name"
+                class="form-control col-8"
+              />
             </div>
             <div class="form-group row">
               <span class="col-2 mr-2 align-items-center">Description</span>
               <textarea
-                name="photo"
+                required
+                name="description"
                 class="form-control col-8"
                 id="description"
               ></textarea>
             </div>
             <div class="form-group row">
               <span class="col-2 mr-2 align-items-center">Price</span>
-              <input type="number" class="form-control col-8" id="price" />
+              <input
+                required
+                type="number"
+                name="price"
+                class="form-control col-8"
+                id="price"
+              />
             </div>
             <div class="form-group row">
               <span class="col-2 mr-2 align-items-center">Category</span>
-              <select class="form-control col-8" id="category">
-                <option selected>Select</option>
-                <option>Smoothies</option>
-                <option>Salads</option>
+              <select
+                required
+                class="form-control col-8"
+                name="category"
+                id="category"
+              >
+                <option>Select</option>
+                {% for category in all_categories %}
+                <option>{{category.name}}</option>
+                {% endfor %}
               </select>
             </div>
             <div class="form-group row">
               <span class="col-2 mr-2 align-items-center">Stock</span>
-              <input type="number" class="form-control col-8" id="stock" />
+              <input
+                required
+                type="number"
+                name="stock"
+                class="form-control col-8"
+                id="stock"
+              />
             </div>
 
             <button type="submit" class="btn btn-outline-primary my-3">
