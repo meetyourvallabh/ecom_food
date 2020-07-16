@@ -27,9 +27,9 @@
             <div class="header__cart">
                 <ul>
                     <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                    <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                    <li><a href="{{url_for('shopping_cart')}}"><i class="fa fa-shopping-bag"></i> <span id="cart_counter">{% if 'cart' in session %} {{session.cart.products | length}} {% else %}0{% endif %}</span></a></li>
                 </ul>
-                <div class="header__cart__price">item: <span>$150.00</span></div>
+                <div class="header__cart__price">item: <span id="cart_total">0</span> <b>₹</b></div>
             </div>
         </div>
     </div>

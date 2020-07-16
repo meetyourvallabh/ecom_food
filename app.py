@@ -14,6 +14,7 @@ from random import randint
 import bcrypt
 from functools import wraps
 from flask_cors import CORS
+from collections import Counter
 
 
 app = Flask(__name__)
@@ -43,7 +44,8 @@ def is_logged_in(f):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    products = mongo.db.products.find()
+    return render_template("index.html",products = products)
 
 
 @app.route("/login/", methods=["GET", "POST"])
@@ -111,7 +113,26 @@ def shop_details():
 
 @app.route("/shopping_cart/")
 def shopping_cart():
-    return render_template("shopping-cart.html")
+
+    
+    
+    cart = []
+    if 'cart' in session:
+        products = session['cart']['products']
+        products_collection = mongo.db.products
+        for prod,quantity in products.items():
+            product = products_collection.find_one({'product_id':prod})
+            product_dict = {
+                'photo':product['photo'],
+                'price':int(product['price']),
+                'name':product['name'],
+                'quantity': quantity,
+                'product_total': int(product['price']) * int(quantity)
+            }
+            cart.append(product_dict)
+
+        print(session['cart'])
+    return render_template("shopping-cart.html",cart = cart)
 
 
 @app.route("/checkout/")
@@ -126,8 +147,42 @@ def blog_details():
 
 @app.route("/add_to_cart/<product_id>", methods=["POST"])
 def add_to_cart(product_id):
-    print(product_id)
-    return jsonify({"result": "product added " + product_id})
+    product = mongo.db.products.find_one({'product_id':product_id})
+    if 'cart' in session:
+        print(session['cart'])
+        product_dict = session['cart']['products']
+        if product_id in product_dict:
+            #add number
+            product_dict[product_id] += 1
+        else:
+            #add key value
+            product_dict[product_id] = 1
+        total_price = int(session['cart']['cart_total'])
+        total_price += int(product['price']) 
+        session['cart'] = {
+            'products':product_dict,
+            'cart_total': total_price
+        }    
+    else:
+        session['cart']={
+            'products':{
+                product_id:1
+            },
+            'cart_total': int(product['price'])
+        }
+    print(session['cart'])
+    return jsonify({
+        "result": "product added " + product_id,
+        "total_products": len(session['cart']['products']),
+        "cart_total": session['cart']['cart_total']
+        })
+
+@app.route('/cart/update_quantity/<product_id>', methods=['POST'])
+def update_product_quantity(product_id):
+    if 'cart' in session:
+        #print(request.body)
+        pass
+    return jsonify({"result":"updated"})
 
 
 @app.route("/logout/")

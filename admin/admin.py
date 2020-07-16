@@ -6,6 +6,11 @@ import os
 from PIL import Image
 from werkzeug.utils import secure_filename
 
+basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("/", 1)
+admin_upload = basedir_admin[0]
+
+
+print(admin_upload)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
@@ -40,26 +45,27 @@ def create_product():
         product_category = request.form["category"]
         product_stock = request.form["stock"]
         product_id = product_name[:2] + str(randint(111, 999))
+
+        if 'photo' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+
         product_photo = request.files["photo"]
 
         if allowed_file(product_photo.filename):
-            path = url_for("static", filename="dashboard/img/products/" + product_id)
-            if not os.path.isdir(path):
-                print("dir exists")
+            path = os.path.abspath(admin_upload+'/static/images/products/'+product_id)
+            if not os.path.exists(path):
                 os.makedirs(path)
+                print('directory created')
             file_name = secure_filename(product_photo.filename)
-            f = os.path.join(
-                url_for(
-                    "static", filename="dashboard/img/products/" + product_id + "/"
-                ),
-                file_name,
-            )
+            
+            f = os.path.join(path,file_name)
             product_photo.save(f)
 
         done = mongo.db.products.insert_one(
             {
                 "product_id": product_id,
-                "photo": f,
+                "photo": '/images/products/'+product_id+'/'+file_name,
                 "name": product_name,
                 "description": product_description,
                 "category": product_category,
