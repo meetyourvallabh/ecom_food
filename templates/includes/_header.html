@@ -1,0 +1,40 @@
+<div class="header__top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="header__top__left">
+                    <ul>
+                        <li><i class="fa fa-envelope"></i> hello@ogtech.com</li>
+                        <li>Free Shipping for all Order above 100 ₹</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="header__top__right">
+                    <div class="header__top__right__social">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-twitter"></i></a>
+                        <a href="#"><i class="fa fa-linkedin"></i></a>
+                        <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                    </div>
+                    <div class="header__top__right__language">
+                        <img src="{{ url_for('static', filename='images/language.png') }}" alt="">
+                        <div>options</div>
+                        <span class="arrow_carrot-down"></span>
+                        <ul>
+                            <li><a href="{{url_for('logout')}}">Logout</a></li>
+                            <li><a href="#">English</a></li>
+                        </ul>
+                    </div>
+                    <div class="header__top__right__auth">
+                        {% if session.logged_in %}
+                        <span><i class="fa fa-user"></i></span> {{session.fname}} {{session.lname}}
+                        {% else %}
+                        <a href="{{url_for('login')}}"><i class="fa fa-user"></i> Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
