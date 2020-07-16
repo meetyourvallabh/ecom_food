@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, flash,redirect, session, jsonify
-from flask_pymongo import PyMongo
+from database import mongo
 import datetime
 from random import randint
 import bcrypt
@@ -10,9 +10,12 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.config['MONGO_URI'] = "mongodb://localhost:27017/og_tech"
 
-mongo = PyMongo(app)
+mongo.init_app(app) # Mongo
 CORS(app)
 
+
+from admin import admin
+app.register_blueprint(admin.app,url_prefix='/admin')
 
 
 # Check if user logged in
@@ -42,6 +45,9 @@ def login():
             session['email'] = found_user['email']
             session['user_id'] = found_user['user_id']
             session['logged_in'] = True
+
+            if found_user['type'] == 'admin':
+                return redirect(url_for('admin.index'))
             flash("Successfull Login","success")
             return redirect(url_for('index'))
 

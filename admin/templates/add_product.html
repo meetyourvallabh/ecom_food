@@ -1,0 +1,68 @@
+{% extends "admin_layout.html" %} {% block body %}
+<!-- Page Wrapper -->
+<div id="wrapper">
+  <!-- Sidebar -->
+  {% include "includes/_sidebar.html" %}
+  <!-- End Sidebar -->
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <!-- Main Content -->
+    <div id="content">
+      <!-- Topbar -->
+      {% include "includes/_topnavbar.html" %}
+      <!-- End of Topbar -->
+      <div class="container" style="margin-left: 175px;">
+        <div class="col-8">
+          <h3>Add Product</h3>
+          <form>
+            <div class="form-group row mt-5">
+              <span class="col-2 mr-2 align-items-center">Photo</span>
+              <input
+                class="btn form-control-file col-8"
+                type="file"
+                name="photo"
+                accept="image"
+                placeholder="choose a file"
+              />
+            </div>
+            <div class="form-group row">
+              <span class="col-2 mr-2 align-items-center">Name</span>
+              <input name="photo" id="name" class="form-control col-8" />
+            </div>
+            <div class="form-group row">
+              <span class="col-2 mr-2 align-items-center">Description</span>
+              <textarea
+                name="photo"
+                class="form-control col-8"
+                id="description"
+              ></textarea>
+            </div>
+            <div class="form-group row">
+              <span class="col-2 mr-2 align-items-center">Price</span>
+              <input type="number" class="form-control col-8" id="price" />
+            </div>
+            <div class="form-group row">
+              <span class="col-2 mr-2 align-items-center">Category</span>
+              <select class="form-control col-8" id="category">
+                <option selected>Select</option>
+                <option>Smoothies</option>
+                <option>Salads</option>
+              </select>
+            </div>
+            <div class="form-group row">
+              <span class="col-2 mr-2 align-items-center">Stock</span>
+              <input type="number" class="form-control col-8" id="stock" />
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary my-3">
+              Create Product
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
