@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html lang="zxx">
-<head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Ogani Template">
-    <meta name="keywords" content="Ogani, unica, creative, html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ogani | Template</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Ogani Template" />
+    <meta name="keywords" content="Ogani, unica, creative, html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>OG Tech</title>
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap"
+      rel="stylesheet"
+    />
 
-{% include "includes/_static_files.html" %}
-    {% block head %}{% endblock %}
-</head>
+    {% include "includes/_static_files.html" %} {% block head %}{% endblock %}
+  </head>
 
-<body>
+  <body>
     <!-- Header Section Begin -->
     <header class="header">
-        
-        {% include 'includes/_hamburger.html' %}
-        {% include 'includes/_header.html' %}
-        {% include 'includes/_navbar.html' %}
-        {% include 'includes/_search_bar.html' %}
-        
+      {% include 'includes/_hamburger.html' %} {% include 'includes/_header.html' %} {% include
+      'includes/_navbar.html' %} {% include 'includes/_search_bar.html' %}
     </header>
     <!-- Header Section End -->
     {% block body %}{% endblock %}
 
-    
     <!-- Footer Section Begin -->
     {% include 'includes/_footer.html' %}
     <!-- Footer Section End -->
@@ -42,7 +39,5 @@
     <script src="{{ url_for('static', filename='js/mixitup.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-   
-</body>
-
+  </body>
 </html>

@@ -122,6 +122,7 @@ def shopping_cart():
         for prod, quantity in products.items():
             product = products_collection.find_one({"product_id": prod})
             product_dict = {
+                "product_id": product["product_id"],
                 "photo": product["photo"],
                 "price": int(product["price"]),
                 "name": product["name"],
@@ -177,19 +178,30 @@ def add_to_cart(product_id):
 @app.route("/cart/update_quantity/<product_id>", methods=["POST"])
 def update_product_quantity(product_id):
     if "cart" in session:
-        print(product_id)
-        print(request.body)
+        print("OLD CART:", session["cart"])
+        req = request.get_json()
+        product_dict = session["cart"]["products"]
+        product_dict[req["product_id"]] = req["quantity"]
+        cart_total = 0
+        for product_id, quantity in product_dict.items():
+            product = mongo.db.products.find_one({"product_id": product_id})
+            price = product["price"]
+            cart_total += int(price) * int(quantity)
+        session["cart"]["cart_total"] = cart_total
+        print("NEW CART:", session["cart"])
+        session["cart"] = {"products": product_dict, "cart_total": cart_total}
 
-    return jsonify({"result": "updated"})
+    return jsonify({"result": "updated", "cart_total": cart_total})
 
-@app.route('/verify_pincode/<pincode>', methods=['GET', 'POST'])
+
+@app.route("/verify_pincode/<pincode>", methods=["GET", "POST"])
 def verify_pincode(pincode):
-    found_pincode = mongo.db.pincodes.find_one({'pincode': pincode})
+    found_pincode = mongo.db.pincodes.find_one({"pincode": pincode})
     if found_pincode:
-        session['pincode'] = pincode
-        return jsonify({'status': 'present'})
-    return jsonify({'status': 'absent'})
-       
+        session["pincode"] = pincode
+        return jsonify({"status": "present"})
+    return jsonify({"status": "absent"})
+
 
 @app.route("/logout/")
 @is_logged_in

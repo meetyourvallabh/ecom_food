@@ -41,11 +41,7 @@
               {% for product in cart %}
               <tr id="{{product.product_id}}">
                 <td class="shoping__cart__item">
-                  <img
-                    height="70"
-                    src="{{ url_for('static', filename=product.photo) }}"
-                    alt=""
-                  />
+                  <img height="70" src="{{ url_for('static', filename=product.photo) }}" alt="" />
                   <h5>{{product.name}}</h5>
                 </td>
                 <td class="shoping__cart__price">
@@ -55,25 +51,25 @@
                   <div class="quantity">
                     <div class="pro-qty">
                       <span
-                        onclick="update_item_quantity('{{product.product_id}}', -1)"
+                        onclick="update_item_quantity('{{product.product_id}}', -1, '{{product.price}}')"
                         class="dec qtybtn"
                         >-</span
                       >
                       <input
                         id="{{product.product_id}}_quantity"
-                        onchange="changeQuantity('{{product.product_id}}')"
+                        onchange="changeQuantity('{{product.product_id}}', '{{product.price}}')"
                         type="text"
                         value="{{product.quantity}}"
                       />
                       <span
-                        onclick="update_item_quantity('{{product.product_id}}', 1)"
+                        onclick="update_item_quantity('{{product.product_id}}', 1, '{{product.price}}')"
                         class="inc qtybtn"
                         >+</span
                       >
                     </div>
                   </div>
                 </td>
-                <td class="shoping__cart__total">
+                <td id="{{product.product_id}}_total" class="shoping__cart__total">
                   {{product.product_total}}
                 </td>
                 <td class="shoping__cart__item__close">
@@ -101,7 +97,9 @@
             <h5>Confirm if we deliver in your area before checkout</h5>
             <form id="form_pincode">
               <input type="text" id="pincode" placeholder="Enter your pincode" />
-              <button type="submit" onclick="verifyPincode()" id="btn_pincode" class="site-btn">Verify Pincode</button>
+              <button type="submit" onclick="verifyPincode()" id="btn_pincode" class="site-btn">
+                Verify Pincode
+              </button>
               <p id="pincode_msg"></p>
             </form>
           </div>
@@ -114,19 +112,19 @@
             <li>
               Subtotal
               <span
-                >{% if 'cart' in session %}{{session.cart.cart_total}}{% else
-                %}0{% endif %} ₹</span
+                >{% if 'cart' in session %}{{session.cart.cart_total}}{% else %}0{% endif %} ₹</span
               >
             </li>
             <li>
               Total
               <span
-                >{% if 'cart' in session %}{{session.cart.cart_total}}{% else
-                %}0{% endif %} ₹</span
+                >{% if 'cart' in session %}{{session.cart.cart_total}}{% else %}0{% endif %} ₹</span
               >
             </li>
           </ul>
-          <a href="{{url_for('checkout')}}" id="checkout" class="primary-btn">PROCEED TO CHECKOUT</a>
+          <a href="{{url_for('checkout')}}" id="checkout" class="primary-btn"
+            >PROCEED TO CHECKOUT</a
+          >
         </div>
       </div>
     </div>
@@ -134,73 +132,74 @@
 </section>
 <!-- Shoping Cart Section End -->
 
-<script> 
+<script>
+  var btnCheckout = document.getElementById('checkout')
+  btnCheckout.style.display = 'none'
 
-  var btnCheckout = document.getElementById('checkout');
-  btnCheckout.style.display = 'none';
-
-  function changeQuantity(product_id) {
-    var product_quantity = document.getElementById(product_id + "_quantity")
-      .value
-    console.log("PRODUCT QUANTITY:", product_quantity)
+  function changeQuantity(product_id, price) {
+    var product_quantity = document.getElementById(product_id + '_quantity').value
+    console.log('PRODUCT QUANTITY:', product_quantity)
     const data = { product_id: product_id, quantity: product_quantity }
     fetch(`http://localhost:5000/cart/update_quantity/${product_id}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data)
+        console.log('Success:', data)
+        document.getElementById(product_id + '_total').innerHTML =
+          Number(product_quantity) * Number(price)
+        var cart_total = document.getElementById('cart_total')
+        cart_total.innerHTML = Number(data.cart_total)
       })
       .catch((error) => {
-        console.error("Error:", error)
+        console.error('Error:', error)
       })
   }
 
-  function update_item_quantity(product_id, quantity) {
-    var prod_quantity = document.getElementById(product_id + "_quantity")
+  function update_item_quantity(product_id, quantity, price) {
+    var prod_quantity = document.getElementById(product_id + '_quantity')
     prod_quantity.value = Number(prod_quantity.value) + quantity
     if (prod_quantity.value < 0) {
       prod_quantity.value = 0
     }
     console.log(prod_quantity.value)
-    changeQuantity(product_id)
+    changeQuantity(product_id, price)
   }
-
 
   function verifyPincode() {
     document.getElementById('form_pincode').addEventListener('submit', (e) => {
-      e.preventDefault();
+      e.preventDefault()
     })
-    pincode = document.getElementById('pincode').value;
-    data = {'pincode': pincode}
+    pincode = document.getElementById('pincode').value
+    data = { pincode: pincode }
     fetch(`http://localhost:5000/verify_pincode/${pincode}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((data) => {
-        var pincode_msg = document.getElementById('pincode_msg');
-        pincode_msg.style.marginTop = '20px';
+        var pincode_msg = document.getElementById('pincode_msg')
+        pincode_msg.style.marginTop = '20px'
         if (data.status == 'present') {
-          pincode_msg.innerText = "Congratulations! We deliver to your area.";
-          pincode_msg.style.color = 'green';
-          btnCheckout.style.display = '';
-
+          pincode_msg.innerText = 'Congratulations! We deliver to your area.'
+          pincode_msg.style.color = 'green'
+          btnCheckout.style.display = ''
         } else {
-          pincode_msg.innerText = "Sorry! Unfortunately we do not provide delivery in your area at the moment.";
-          pincode_msg.style.color = 'red';
-          btnCheckout.style.display = 'none';
+          pincode_msg.innerText =
+            'Sorry! Unfortunately we do not provide delivery in your area at the moment.'
+          pincode_msg.style.color = 'red'
+          btnCheckout.style.display = 'none'
         }
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error('Error:', error)
       })
   }
 </script>
