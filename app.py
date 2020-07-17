@@ -65,6 +65,7 @@ def login():
             session["lname"] = found_user["lname"]
             session["email"] = found_user["email"]
             session["user_id"] = found_user["user_id"]
+            session["type"] = found_user["type"]
             session["logged_in"] = True
 
             if found_user["type"] == "admin":

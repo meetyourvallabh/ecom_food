@@ -1,4 +1,6 @@
 .env
 /.vscode
+/admin/__pycache__
 /__pycache__
 /static/images/products/*
+/.DS_Store

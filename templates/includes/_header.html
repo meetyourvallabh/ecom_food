@@ -22,6 +22,10 @@
                         <div>options</div>
                         <span class="arrow_carrot-down"></span>
                         <ul>
+                            {% if session.type == 'admin' %}
+                                    <li><a href="{{url_for('admin.dashboard')}}">Dashboard</a></li>
+                            {% endif %}
+                            
                             <li><a href="{{url_for('logout')}}">Logout</a></li>
                             <li><a href="#">English</a></li>
                         </ul>
