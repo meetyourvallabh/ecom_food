@@ -1,136 +1,168 @@
-{% extends 'layout.html' %}
+{% extends 'layout.html' %} {% block body %}
 
-
-
-{% block body %}
-    
-
-    <!-- Breadcrumb Section Begin -->
-    <section class="breadcrumb-section set-bg" data-setbg="{{ url_for('static', filename='images/breadcrumb.jpg') }}">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <div class="breadcrumb__text">
-                        <h2>Shopping Cart</h2>
-                        <div class="breadcrumb__option">
-                            <a href="/index">Home</a>
-                            <span>Shopping Cart</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- Breadcrumb Section Begin -->
+<section
+  class="breadcrumb-section set-bg"
+  data-setbg="{{ url_for('static', filename='images/breadcrumb.jpg') }}"
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <div class="breadcrumb__text">
+          <h2>Shopping Cart</h2>
+          <div class="breadcrumb__option">
+            <a href="/index">Home</a>
+            <span>Shopping Cart</span>
+          </div>
         </div>
-    </section>
-    <!-- Breadcrumb Section End -->
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Breadcrumb Section End -->
 
-    <!-- Shoping Cart Section Begin -->
-    <section class="shoping-cart spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="shoping__cart__table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th class="shoping__product">Products</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for product in cart %}
-                                <tr id={{product.product_id}}>
-                                    <td class="shoping__cart__item">
-                                        <img height="70" src="{{ url_for('static', filename=product.photo) }}" alt="">
-                                        <h5>{{product.name}}</h5>
-                                    </td>
-                                    <td class="shoping__cart__price">
-                                        {{product.price}} ₹
-                                    </td>
-                                    <td class="shoping__cart__quantity">
-                                        <div class="quantity">
-                                            <div class="pro-qty">
-                                                <input id="{{product.product_id}}_quantity" onchange="changeQuantity('{{product.product_id}}')" type="text" value="{{product.quantity}}">
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="shoping__cart__total">
-                                        {{product.product_total}}
-                                    </td>
-                                    <td class="shoping__cart__item__close">
-                                        <span class="icon_close"></span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                                
-                            </tbody>
-                        </table>
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="shoping__cart__table">
+          <table>
+            <thead>
+              <tr>
+                <th class="shoping__product">Products</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in cart %}
+              <tr id="{{product.product_id}}">
+                <td class="shoping__cart__item">
+                  <img
+                    height="70"
+                    src="{{ url_for('static', filename=product.photo) }}"
+                    alt=""
+                  />
+                  <h5>{{product.name}}</h5>
+                </td>
+                <td class="shoping__cart__price">
+                  {{product.price}} ₹
+                </td>
+                <td class="shoping__cart__quantity">
+                  <div class="quantity">
+                    <div class="pro-qty">
+                      <span
+                        onclick="update_item_quantity('{{product.product_id}}', -1)"
+                        class="dec qtybtn"
+                        >-</span
+                      >
+                      <input
+                        id="{{product.product_id}}_quantity"
+                        onchange="changeQuantity('{{product.product_id}}')"
+                        type="text"
+                        value="{{product.quantity}}"
+                      />
+                      <span
+                        onclick="update_item_quantity('{{product.product_id}}', 1)"
+                        class="inc qtybtn"
+                        >+</span
+                      >
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="shoping__cart__btns">
-                        <a href="#" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
-                        <a href="#" class="primary-btn cart-btn cart-btn-right"><span class="icon_loading"></span>
-                            Upadate Cart</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="shoping__continue">
-                        <div class="shoping__discount">
-                            <h5>Discount Codes</h5>
-                            <form action="#">
-                                <input type="text" placeholder="Enter your coupon code">
-                                <button type="submit" class="site-btn">APPLY COUPON</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="shoping__checkout">
-                        <h5>Cart Total</h5>
-                        <ul>
-                            <li>Subtotal <span>{% if 'cart' in session %}{{session.cart.cart_total}}{% else %}0{% endif %} ₹</span></li>
-                            <li>Total <span>{% if 'cart' in session %}{{session.cart.cart_total}}{% else %}0{% endif %} ₹</span></li>
-                        </ul>
-                        <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
-                    </div>
-                </div>
-            </div>
+                  </div>
+                </td>
+                <td class="shoping__cart__total">
+                  {{product.product_total}}
+                </td>
+                <td class="shoping__cart__item__close">
+                  <span class="icon_close"></span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-    </section>
-    <!-- Shoping Cart Section End -->
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="shoping__cart__btns">
+          <a href="#" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+          <a href="#" class="primary-btn cart-btn cart-btn-right"
+            ><span class="icon_loading"></span> Upadate Cart</a
+          >
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="shoping__continue">
+          <div class="shoping__discount">
+            <h5>Discount Codes</h5>
+            <form action="#">
+              <input type="text" placeholder="Enter your coupon code" />
+              <button type="submit" class="site-btn">APPLY COUPON</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="shoping__checkout">
+          <h5>Cart Total</h5>
+          <ul>
+            <li>
+              Subtotal
+              <span
+                >{% if 'cart' in session %}{{session.cart.cart_total}}{% else
+                %}0{% endif %} ₹</span
+              >
+            </li>
+            <li>
+              Total
+              <span
+                >{% if 'cart' in session %}{{session.cart.cart_total}}{% else
+                %}0{% endif %} ₹</span
+              >
+            </li>
+          </ul>
+          <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Shoping Cart Section End -->
 
-    <script>
-        
-        function changeQuantity(product_id){
-            var product_quantity = document.getElementById(product_id+"_quantity").value;
-            console.log(product_quantity);
-            const data = { product_id: product_id , 'quantity':product_quantity};
-            fetch('http://localhost:5000/cart/update_quantity/'+String(product_id), {
-              method: 'POST', // or 'PUT'
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-              console.log('Success:', data);
-              
-                
-              
-            
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-            });
+<script>
+  function changeQuantity(product_id) {
+    var product_quantity = document.getElementById(product_id + "_quantity")
+      .value
+    console.log("PRODUCT QUANTITY:", product_quantity)
+    const data = { product_id: product_id, quantity: product_quantity }
+    fetch(`http://localhost:5000/cart/update_quantity/${product_id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data)
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+      })
+  }
 
-        }
-        
-        
-    </script>
+  function update_item_quantity(product_id, quantity) {
+    var prod_quantity = document.getElementById(product_id + "_quantity")
+    prod_quantity.value = Number(prod_quantity.value) + quantity
+    if (prod_quantity.value < 0) {
+      prod_quantity.value = 0
+    }
+    console.log(prod_quantity.value)
+    changeQuantity(product_id)
+  }
+</script>
 {% endblock %}

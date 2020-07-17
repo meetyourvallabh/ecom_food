@@ -6,7 +6,9 @@ import os
 from PIL import Image
 from werkzeug.utils import secure_filename
 
-basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("/", 1)
+# basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("/", 1)
+basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("\\", 1)
+print(basedir_admin)
 admin_upload = basedir_admin[0]
 
 
@@ -46,26 +48,28 @@ def create_product():
         product_stock = request.form["stock"]
         product_id = product_name[:2] + str(randint(111, 999))
 
-        if 'photo' not in request.files:
-            flash('No file part')
+        if "photo" not in request.files:
+            flash("No file part")
             return redirect(request.url)
 
         product_photo = request.files["photo"]
 
         if allowed_file(product_photo.filename):
-            path = os.path.abspath(admin_upload+'/static/images/products/'+product_id)
+            path = os.path.abspath(
+                admin_upload + "/static/images/products/" + product_id
+            )
             if not os.path.exists(path):
                 os.makedirs(path)
-                print('directory created')
+                print("directory created")
             file_name = secure_filename(product_photo.filename)
-            
-            f = os.path.join(path,file_name)
+
+            f = os.path.join(path, file_name)
             product_photo.save(f)
 
         done = mongo.db.products.insert_one(
             {
                 "product_id": product_id,
-                "photo": '/images/products/'+product_id+'/'+file_name,
+                "photo": "/images/products/" + product_id + "/" + file_name,
                 "name": product_name,
                 "description": product_description,
                 "category": product_category,
@@ -116,6 +120,12 @@ def categories():
     return render_template("all_categories.html", all_categories=all_categories)
 
 
+@app.route("/pincodes")
+def pincodes():
+    all_pincodes = mongo.db.pincodes.find()
+    return render_template("all_pincodes.html", all_pincodes=all_pincodes)
+
+
 @app.route("/products/update/<product_id>", methods=["GET", "POST"])
 def update_product(product_id):
     if request.method == "POST":
@@ -124,6 +134,25 @@ def update_product(product_id):
         new_price = request.form["price"]
         new_category = request.form["category"]
         new_stock = request.form["stock"]
+
+        if "photo" not in request.files:
+            flash("No file part")
+            return redirect(request.url)
+
+        product_photo = request.files["photo"]
+
+        if allowed_file(product_photo.filename):
+            path = os.path.abspath(
+                admin_upload + "/static/images/products/" + product_id
+            )
+            if not os.path.exists(path):
+                os.makedirs(path)
+                print("directory created")
+            file_name = secure_filename(product_photo.filename)
+
+            f = os.path.join(path, file_name)
+            product_photo.save(f)
+
         done = mongo.db.categories.update_one(
             {"product_id": product_id},
             {

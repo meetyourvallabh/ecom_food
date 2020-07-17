@@ -423,4 +423,13 @@
   </div>
 </div>
 
-{% endblock %}
+{% block script %}
+<!-- Page level plugins -->
+<script src="vendor/chart.js/Chart.min.js"></script>
+
+<!-- Page level custom scripts -->
+<script src="{{url_for('static', filename='dashboard/js/demo/chart-area-demo.js')}}"></script>
+<script src="{{url_for('static', filename='dashboard/js/demo/chart-pie-demo.js')}}"></script>
+<script src="{{url_for('static', filename='dashboard/js/demo/chart-bar-demo.js')}}"></script>
+
+{% endblock %} {% endblock %}

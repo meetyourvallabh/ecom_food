@@ -1,5 +1,6 @@
-{% extends 'admin_layout.html' %} {% block head %}<link
-  href="vendor/datatables/dataTables.bootstrap4.min.css"
+{% extends 'admin_layout.html' %} {% block head %}
+<link
+  href="{{url_for('static', filename='dashboard/vendor/datatables/dataTables.bootstrap4.min.css')}}"
   rel="stylesheet"
 />{% endblock %} {% block body %}
 
@@ -134,7 +135,7 @@
         <button class="btn btn-secondary" type="button" data-dismiss="modal">
           Cancel
         </button>
-        <a class="btn btn-primary" href="login.html">Logout</a>
+        <a class="btn btn-primary" href="{{url_for('logout')}}">Logout</a>
       </div>
     </div>
   </div>
