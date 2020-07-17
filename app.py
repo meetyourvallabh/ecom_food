@@ -181,6 +181,14 @@ def update_product_quantity(product_id):
 
     return jsonify({"result": "updated"})
 
+@app.route('/verify_pincode/<pincode>', methods=['GET', 'POST'])
+def verify_pincode(pincode):
+    found_pincode = mongo.db.pincodes.find_one({'pincode': pincode})
+    if found_pincode:
+        session['pincode'] = pincode
+        return jsonify({'status': 'present'})
+    return jsonify({'status': 'absent'})
+       
 
 @app.route("/logout/")
 @is_logged_in

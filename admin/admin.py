@@ -107,6 +107,26 @@ def create_category():
 
     return render_template("add_category.html")
 
+@app.route("/pincodes/create", methods=["POST", "GET"])
+def create_pincode():
+    if request.method == "POST":
+        pincode_code = request.form["pincode"]
+        pincode_area = request.form["area"]
+        pincode_city = request.form["city"]
+
+        done = mongo.db.pincodes.insert_one(
+            {"pincode": pincode_code, "area": pincode_area, "city": pincode_city}
+        )
+
+        if done:
+            flash('"' + pincode_code + '" created successfully!', "success")
+            return redirect(url_for("admin.pincodes"))
+        else:
+            flash('"' + pincode_code + '" could not be created', "danger")
+            return redirect(url_for("admin.create_pincode"))
+
+    return render_template("add_pincode.html")
+
 
 @app.route("/products")
 def products():
@@ -192,6 +212,24 @@ def update_category(category_id):
     found_category = mongo.db.categories.find_one({"category_id": category_id})
     return render_template("update_category.html", found_category=found_category)
 
+@app.route("/pincodes/update/<pincode>", methods=["GET", "POST"])
+def update_pincode(pincode):
+    if request.method == "POST":
+        new_pincode = request.form["pincode"]
+        new_area = request.form["area"]
+        new_city = request.form["city"]
+        done = mongo.db.pincodes.update_one(
+            {"pincode": pincode}, {"$set": {"pincode": new_pincode, "area": new_area, "city": new_city}}
+        )
+        if done:
+            flash("Pincode successfully updated!", "success")
+            return redirect(url_for("admin.pincodes"))
+        else:
+            flash("Couldn't update pincode", "danger")
+            return redirect(url_for("admin.update_pincode", pincode=pincode))
+    found_pincode = mongo.db.pincodes.find_one({"pincode": pincode})
+    return render_template("update_pincode.html", found_pincode=found_pincode)
+
 
 @app.route("/products/delete/<product_id>", methods=["GET", "POST"])
 def delete_product(product_id):
@@ -202,6 +240,16 @@ def delete_product(product_id):
     else:
         flash("Product couldn't be deleted!", "danger")
         return redirect(url_for("admin.products"))
+
+@app.route("/pincodes/delete/<pincode>", methods=["GET", "POST"])
+def delete_pincode(pincode):
+    done = mongo.db.pincodes.delete_one({"pincode": pincode})
+    if done:
+        flash("Pincode successfully deleted!", "success")
+        return redirect(url_for("admin.pincodes"))
+    else:
+        flash("Pincode couldn't be deleted!", "danger")
+        return redirect(url_for("admin.pincodes"))
 
 
 @app.route("/categories/delete/<category_id>", methods=["GET", "POST"])

@@ -91,17 +91,18 @@
         <div class="shoping__cart__btns">
           <a href="#" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
           <a href="#" class="primary-btn cart-btn cart-btn-right"
-            ><span class="icon_loading"></span> Upadate Cart</a
+            ><span class="icon_loading"></span> Update Cart</a
           >
         </div>
       </div>
       <div class="col-lg-6">
         <div class="shoping__continue">
           <div class="shoping__discount">
-            <h5>Discount Codes</h5>
-            <form action="#">
-              <input type="text" placeholder="Enter your coupon code" />
-              <button type="submit" class="site-btn">APPLY COUPON</button>
+            <h5>Confirm if we deliver in your area before checkout</h5>
+            <form id="form_pincode">
+              <input type="text" id="pincode" placeholder="Enter your pincode" />
+              <button type="submit" onclick="verifyPincode()" id="btn_pincode" class="site-btn">Verify Pincode</button>
+              <p id="pincode_msg"></p>
             </form>
           </div>
         </div>
@@ -125,7 +126,7 @@
               >
             </li>
           </ul>
-          <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
+          <a href="{{url_for('checkout')}}" id="checkout" class="primary-btn">PROCEED TO CHECKOUT</a>
         </div>
       </div>
     </div>
@@ -133,7 +134,11 @@
 </section>
 <!-- Shoping Cart Section End -->
 
-<script>
+<script> 
+
+  var btnCheckout = document.getElementById('checkout');
+  btnCheckout.style.display = 'none';
+
   function changeQuantity(product_id) {
     var product_quantity = document.getElementById(product_id + "_quantity")
       .value
@@ -163,6 +168,40 @@
     }
     console.log(prod_quantity.value)
     changeQuantity(product_id)
+  }
+
+
+  function verifyPincode() {
+    document.getElementById('form_pincode').addEventListener('submit', (e) => {
+      e.preventDefault();
+    })
+    pincode = document.getElementById('pincode').value;
+    data = {'pincode': pincode}
+    fetch(`http://localhost:5000/verify_pincode/${pincode}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        var pincode_msg = document.getElementById('pincode_msg');
+        pincode_msg.style.marginTop = '20px';
+        if (data.status == 'present') {
+          pincode_msg.innerText = "Congratulations! We deliver to your area.";
+          pincode_msg.style.color = 'green';
+          btnCheckout.style.display = '';
+
+        } else {
+          pincode_msg.innerText = "Sorry! Unfortunately we do not provide delivery in your area at the moment.";
+          pincode_msg.style.color = 'red';
+          btnCheckout.style.display = 'none';
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      })
   }
 </script>
 {% endblock %}
