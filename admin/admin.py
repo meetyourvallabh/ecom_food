@@ -6,8 +6,8 @@ import os
 from PIL import Image
 from werkzeug.utils import secure_filename
 
-# basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("/", 1)
-basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("\\", 1)
+basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("/", 1)
+#basedir_admin = (os.path.abspath(os.path.dirname(__file__))).rsplit("\\", 1)
 print(basedir_admin)
 admin_upload = basedir_admin[0]
 
